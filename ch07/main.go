@@ -36,6 +36,7 @@ func listNPlusOne(ctx context.Context, db *pgxpool.Pool) ([]row, int, error) {
 		return nil, queries, err
 	}
 	for i := range list {
+		// list[i] の団体の名前を、list[i].OrgName に読み込む
 		err := db.QueryRow(ctx, `SELECT name FROM organizations WHERE id = $1`, list[i].OrgID).Scan(&list[i].OrgName)
 		queries++
 		if err != nil {
@@ -47,6 +48,7 @@ func listNPlusOne(ctx context.Context, db *pgxpool.Pool) ([]row, int, error) {
 
 // JOIN: 1回で取る
 func listJoin(ctx context.Context, db *pgxpool.Pool) ([]row, int, error) {
+	// JOIN で、申し込みと団体の名前を1回のSQLでまとめて取る
 	rows, err := db.Query(ctx, `
 		SELECT a.id, a.organization_id, o.name
 		FROM applications AS a

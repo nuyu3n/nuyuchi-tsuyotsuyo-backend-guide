@@ -6,15 +6,18 @@ func TestCan(t *testing.T) {
 	const event, otherEvent = 1, 2
 	const myOrg, otherOrg = 10, 20
 
+	// 役割ごとの人を用意する
 	leader := Actor{UserID: 100, Assignments: []Assignment{{EventID: event, Role: RoleLeader, OrgID: myOrg}}}
 	staff := Actor{UserID: 200, Assignments: []Assignment{{EventID: event, Role: RoleStaff}}}
 	viewer := Actor{UserID: 300, Assignments: []Assignment{{EventID: event, Role: RoleViewer}}}
 	nobody := Actor{UserID: 400}
 
+	// 自分の団体、ほかの団体、別の行事の申し込み
 	mine := Application{ID: 1, EventID: event, OrgID: myOrg}
 	others := Application{ID: 2, EventID: event, OrgID: otherOrg}
 	otherEvents := Application{ID: 3, EventID: otherEvent, OrgID: myOrg}
 
+	// 1行が1つのテスト。名前、誰が、何を、どの申し込みに、期待する結果
 	tests := []struct {
 		name  string
 		actor Actor

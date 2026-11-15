@@ -8,6 +8,7 @@ import (
 
 // Querier は、プール（*pgxpool.Pool）とトランザクション（pgx.Tx）のどちらでも満たせる。
 type Querier interface {
+	// args ...any は「どんな型の値でも、いくつでも渡せる」という意味
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
 }
 

@@ -19,8 +19,10 @@ func currentActor(r *http.Request) authz.Actor { return authz.Actor{} }
 func writeJSON(w http.ResponseWriter, v any) { json.NewEncoder(w).Encode(v) }
 
 // 穴のあるハンドラ
+// ハンドラを作って返す関数。中の関数から s を使えるように、この形にしている。
 func getApplicationBad(s store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// URL の {id} の部分を取り出して、数値に変換する
 		id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 		if err != nil {
 			http.Error(w, "bad request", http.StatusBadRequest)
@@ -36,8 +38,10 @@ func getApplicationBad(s store) http.HandlerFunc {
 }
 
 // 直したハンドラ
+// ハンドラを作って返す関数。中の関数から s を使えるように、この形にしている。
 func getApplication(s store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// URL の {id} の部分を取り出して、数値に変換する
 		id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 		if err != nil {
 			http.Error(w, "bad request", http.StatusBadRequest)

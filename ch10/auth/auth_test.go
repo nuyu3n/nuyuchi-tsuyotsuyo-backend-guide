@@ -11,6 +11,7 @@ import (
 func TestVerify(t *testing.T) {
 	now := time.Date(2027, 4, 1, 9, 0, 0, 0, time.UTC)
 
+	// t.Run で、名前のついた小さなテストに分けられる
 	t.Run("正しいコードは1回だけ使える", func(t *testing.T) {
 		code, lc, err := NewCode("a@example.com", now)
 		if err != nil {
@@ -26,6 +27,7 @@ func TestVerify(t *testing.T) {
 
 	t.Run("期限を過ぎたら使えない", func(t *testing.T) {
 		code, lc, _ := NewCode("a@example.com", now)
+		// 11分後に入力する
 		err := Verify(&lc, code, now.Add(11*time.Minute))
 		if !errors.Is(err, ErrExpired) {
 			t.Fatalf("err = %v, want ErrExpired", err)
@@ -35,9 +37,11 @@ func TestVerify(t *testing.T) {
 	t.Run("5回間違えたら、正しいコードでも使えない", func(t *testing.T) {
 		code, lc, _ := NewCode("a@example.com", now)
 		wrong := "000000"
+		// たまたま正しいコードと同じだったら、別の値にする
 		if code == wrong {
 			wrong = "111111"
 		}
+		// for range 5 は「5回くり返す」という意味
 		for range 5 {
 			if err := Verify(&lc, wrong, now); !errors.Is(err, ErrWrongCode) {
 				t.Fatalf("err = %v, want ErrWrongCode", err)
