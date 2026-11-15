@@ -39,7 +39,7 @@ func ClearSessionCookie(w http.ResponseWriter) {
 		Name:     "session",
 		Value:    "",
 		Path:     "/",
-		MaxAge:   -1, // 負の値にすると、ブラウザはすぐに Cookie を消す
+		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,

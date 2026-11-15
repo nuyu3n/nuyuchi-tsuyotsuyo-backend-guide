@@ -36,6 +36,7 @@ func TestCan(t *testing.T) {
 		{"閲覧のみは見られる", viewer, ActionView, others, true},
 		{"閲覧のみは承認できない", viewer, ActionApprove, others, false},
 		{"役割のない人は何もできない", nobody, ActionView, mine, false},
+		// Action("...") で、表にない操作を作って試す
 		{"知らない操作はできない", staff, Action("application.delete"), mine, false},
 	}
 

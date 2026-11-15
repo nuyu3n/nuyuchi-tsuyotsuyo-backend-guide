@@ -35,7 +35,7 @@ type LoginCode struct {
 
 // NewCode は、6桁のコードと、保存するための LoginCode を作る。
 func NewCode(email string, now time.Time) (string, LoginCode, error) {
-	// 0〜999999 の数を、予測できない方法で選ぶ（crypto/rand を使う）
+	// 0〜999999 の数をランダムに選ぶ
 	n, err := rand.Int(rand.Reader, big.NewInt(1_000_000))
 	if err != nil {
 		return "", LoginCode{}, err
@@ -62,9 +62,7 @@ func Verify(lc *LoginCode, input string, now time.Time) error {
 	}
 	// 合っていても間違っていても、試した回数を1つ増やす
 	lc.Attempts++
-	// 入力をハッシュにして、保存しておいたハッシュと比べる。
-	// ConstantTimeCompare は、何文字目まで合っていたかで時間が変わらない比べ方。
-	// hash[:] は、配列をスライスとして渡すための書き方。
+	// 入力をハッシュにして、保存したハッシュと比べる（hash[:] は、配列をスライスとして渡す書き方）
 	hash := sha256.Sum256([]byte(input))
 	if subtle.ConstantTimeCompare(hash[:], lc.CodeHash[:]) != 1 {
 		return ErrWrongCode

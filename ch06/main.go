@@ -28,7 +28,7 @@ INSERT INTO slots (id, capacity) VALUES (1, 1);
 // 守っていない申し込み
 func enterUnsafe(ctx context.Context, db *pgxpool.Pool, userID int64) error {
 	var capacity, count int
-	// 定員を読む。QueryRow でSQLを実行し、Scan で結果を変数に入れる（チャプター9で扱う）
+	// 定員を読む
 	err := db.QueryRow(ctx, `SELECT capacity FROM slots WHERE id = 1`).Scan(&capacity)
 	if err != nil {
 		return err
@@ -49,7 +49,6 @@ func enterUnsafe(ctx context.Context, db *pgxpool.Pool, userID int64) error {
 
 // 行をロックして守る申し込み
 func enterLocked(ctx context.Context, db *pgxpool.Pool, userID int64) error {
-	// トランザクションを始める
 	tx, err := db.Begin(ctx)
 	if err != nil {
 		return err
@@ -58,7 +57,7 @@ func enterLocked(ctx context.Context, db *pgxpool.Pool, userID int64) error {
 	defer tx.Rollback(ctx)
 
 	var capacity, count int
-	// FOR UPDATE でこの行をロックする。ほかの人は、このトランザクションが終わるまで待たされる
+	// FOR UPDATE: この行をロックする。ほかの人は、こちらが終わるまで待たされる
 	err = tx.QueryRow(ctx, `SELECT capacity FROM slots WHERE id = 1 FOR UPDATE`).Scan(&capacity)
 	if err != nil {
 		return err
@@ -75,7 +74,6 @@ func enterLocked(ctx context.Context, db *pgxpool.Pool, userID int64) error {
 	if err != nil {
 		return err
 	}
-	// ここまで成功したら確定する
 	return tx.Commit(ctx)
 }
 

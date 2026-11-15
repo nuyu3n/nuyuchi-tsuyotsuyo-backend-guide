@@ -12,7 +12,6 @@ import (
 
 var testDB *pgxpool.Pool
 
-// TestMain は、このパッケージのテストを始める前に1回だけ動く。
 func TestMain(m *testing.M) {
 	url := os.Getenv("TEST_DATABASE_URL")
 	if url == "" {
@@ -49,7 +48,7 @@ func beginTx(t *testing.T) pgx.Tx {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// テストが終わったときに呼ばれる。ロールバックして、テストで入れたデータを消す
+	// テストが終わったらロールバックする
 	t.Cleanup(func() { tx.Rollback(ctx) })
 	return tx
 }
@@ -63,6 +62,7 @@ func mustExec(t *testing.T, tx pgx.Tx, sql string, args ...any) {
 
 func TestListVisibleApplicationIDs(t *testing.T) {
 	const event, otherEvent = 1, 2
+	// それぞれのユーザーID
 	const leader, staff, viewer, nobody = 100, 200, 300, 400
 
 	tests := []struct {

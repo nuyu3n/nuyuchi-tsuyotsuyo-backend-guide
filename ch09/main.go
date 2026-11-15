@@ -21,7 +21,6 @@ func listTitles(ctx context.Context, db *pgxpool.Pool, eventID int64) ([]string,
 	if err != nil {
 		return nil, err
 	}
-	// 読み終わったら閉じる
 	defer rows.Close()
 
 	var titles []string
@@ -33,7 +32,6 @@ func listTitles(ctx context.Context, db *pgxpool.Pool, eventID int64) ([]string,
 		}
 		titles = append(titles, title)
 	}
-	// 読んでいる途中でエラーが起きていないかも返す
 	return titles, rows.Err()
 }
 
@@ -115,7 +113,7 @@ VALUES (1, 1, 'お化け屋敷', 'submitted', '暗幕を使う'), (1, 2, '写真
 	err = db.QueryRow(ctx, `SELECT count(*) FROM applications WHERE title = $1`, "写真展' OR '1'='1").Scan(&n)
 	fmt.Println("placeholder:", n, err)
 
-	// ANY: スライス []int64{1, 2} をそのまま $1 に渡せる。ANY($1) は「この中のどれか」
+	// ANY($1) は「$1 の中のどれか」という意味
 	rows, _ := db.Query(ctx, `SELECT name FROM organizations WHERE id = ANY($1) ORDER BY id`, []int64{1, 2})
 	// すべての行を読んで、string のスライスにまとめる
 	names, err := pgx.CollectRows(rows, pgx.RowTo[string])
@@ -134,7 +132,6 @@ VALUES (1, 1, 'お化け屋敷', 'submitted', '暗幕を使う'), (1, 2, '写真
 	fmt.Println("approve 1:", approve(ctx, db, 1, 7))
 	fmt.Println("approve 1 again:", approve(ctx, db, 1, 7))
 
-	// sqlc が作ったコードを使う。SQLを書かずに、Goの関数として呼べる
 	q := dbgen.New(db)
 	app, err := q.GetApplication(ctx, 2)
 	fmt.Printf("sqlc get: %s %s note.Valid=%v %v\n", app.Title, app.Status, app.Note.Valid, err)

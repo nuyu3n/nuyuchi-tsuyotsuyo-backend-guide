@@ -6,7 +6,6 @@ import (
 )
 
 func TestAllow(t *testing.T) {
-	// 1時間に3回まで
 	l := New(3, time.Hour)
 	now := time.Date(2027, 4, 1, 9, 0, 0, 0, time.UTC)
 

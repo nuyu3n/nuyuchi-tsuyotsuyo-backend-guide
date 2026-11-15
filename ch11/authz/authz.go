@@ -45,7 +45,6 @@ var allowed = map[Role][]Action{
 
 // Can は、a が app に対して act をしてよいかを返す。
 func Can(a Actor, act Action, app Application) bool {
-	// その人が持っている役割を1つずつ見ていく
 	for _, as := range a.Assignments {
 		// 別の行事の役割は関係ない
 		if as.EventID != app.EventID {

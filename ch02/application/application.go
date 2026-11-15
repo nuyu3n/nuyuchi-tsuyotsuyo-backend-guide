@@ -9,7 +9,6 @@ import (
 // 締切切れを表すエラー。呼び出した側は errors.Is で見分けられる。
 var ErrDeadlinePassed = errors.New("締切を過ぎています")
 
-// 申し込み1件ぶんのデータ。
 type Application struct {
 	ID       int64
 	Status   string
@@ -17,8 +16,7 @@ type Application struct {
 }
 
 // Store は、データの出し入れだけを受け持つ。
-// interface なので「この2つのメソッドを持っている型なら何でもよい」という意味になる。
-// 本番ではデータベースを使う型を、テストでは偽物の型を渡せる。
+// interface なので、この2つのメソッドを持つ型なら何でも渡せる（本番はデータベース、テストでは偽物）。
 type Store interface {
 	Find(ctx context.Context, id int64) (Application, error)
 	UpdateStatus(ctx context.Context, id int64, status string) error
@@ -27,8 +25,7 @@ type Store interface {
 // Service は、業務のルールだけを受け持つ。HTTPもSQLも知らない。
 type Service struct {
 	Store Store
-	// 今の時刻を返す関数。time.Now を直接呼ばずに外から渡しておくと、
-	// テストのときに好きな時刻に差しかえられる。
+	// 今の時刻を返す関数。外から渡すので、テストでは好きな時刻にできる。
 	Now func() time.Time
 }
 

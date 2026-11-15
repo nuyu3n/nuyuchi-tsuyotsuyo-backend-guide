@@ -8,7 +8,7 @@ import (
 // Limiter は、キー（メールアドレスやIPアドレス）ごとに、
 // 一定の時間の中で何回まで許すかを数える。
 type Limiter struct {
-	mu     sync.Mutex    // 同時にいくつものリクエストから使われても壊れないようにする鍵
+	mu     sync.Mutex    // 同時に使われても壊れないようにするための鍵
 	max    int           // 許す回数
 	window time.Duration // 数える時間の幅
 	// キーごとに、許した時刻を覚えておく
@@ -21,7 +21,7 @@ func New(max int, window time.Duration) *Limiter {
 }
 
 func (l *Limiter) Allow(key string, now time.Time) bool {
-	// ここは一度に1つのリクエストだけが通れるようにする。関数を抜けるときに鍵を外す
+	// 鍵をかけて、ほかのリクエストを待たせる。関数を抜けるときに外す
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
